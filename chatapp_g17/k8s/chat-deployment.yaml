@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: chat
+  template:
+    metadata:
+      labels:
+        app: chat
+    spec:
+      containers:
+      - name: chat
+        image: docker.io/cansusharef/chat-service:latest
+        ports:
+        - containerPort: 3002
+        env:
+        - name: PORT
+          value: "3002"
+        - name: JWT_SECRET
+          value: "dev-secret" 
+        - name: MONGO_URL
+          value: "mongodb://mongo-service:27017/chatapp"
+        - name: CORS_ORIGIN
+          value: "http://frontend-service:3000"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chat-service
+spec:
+  selector:
+    app: chat
+  ports:
+  - port: 3002
+    targetPort: 3002

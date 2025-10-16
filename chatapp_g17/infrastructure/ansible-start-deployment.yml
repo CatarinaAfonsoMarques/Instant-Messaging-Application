@@ -1,0 +1,22 @@
+- hosts: master
+  become: yes
+  become_user: root
+  become_method: sudo
+  tasks:
+    - name: Copy all deployment files
+      copy: 
+        src: "{{ item }}"
+        dest: /home/ubuntu/
+        mode: 0777
+      with_items:
+        - mongo-deployment.yaml
+        - auth-deployment.yaml
+        - chat-deployment.yaml
+        - frontend-deployment.yaml
+
+    - name: Start all deployments
+      shell: |
+        kubectl apply -f /home/ubuntu/mongo-deployment.yaml
+        kubectl apply -f /home/ubuntu/auth-deployment.yaml
+        kubectl apply -f /home/ubuntu/chat-deployment.yaml
+        kubectl apply -f /home/ubuntu/frontend-deployment.yaml
